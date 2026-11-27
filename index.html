@@ -118,7 +118,10 @@
     position:absolute;inset:0;pointer-events:none;backface-visibility:hidden;
     box-shadow:10px 4px 22px #26192a70;
   }
-  #push-toggle{margin-top:14px}
+  #push-guide-open{margin-top:14px;background:#fff4df;color:#311c46}
+  #push-guide .hint,#entry-form .hint{color:#555}
+  #entry-form label{display:grid;gap:4px;margin:12px 0;font-weight:600}
+  #entry-form input{width:100%;font:inherit;padding:8px;border:1px solid #b8a9b9;border-radius:8px}
   #christmas-letter{margin-top:20px;padding:16px;border:1px solid #b893bd;border-radius:14px}
   #christmas-letter h2,#christmas-letter p{margin:0}
   #christmas-letter p{margin-top:6px}
@@ -143,9 +146,9 @@
       <h2 id="letter-title">예수님의 편지</h2>
       <p id="letter-status"></p>
     </section>
-    <button type="button" class="plain" id="push-toggle" hidden>묵상 알림 받기</button>
-    <p class="hint" id="push-status" role="status" hidden></p>
-    <p class="hint">날짜 카드를 열면 출석, 마지막 장에서 묵상 완료를 누르면 묵상 인증이 운영자용 시트에 기록돼요. 날짜와 브라우저 임의 식별값으로 구분해요.</p>
+    <button type="button" class="plain" id="push-guide-open">알림 설정 안내</button>
+
+    <p class="hint">날짜 카드를 열면 출석, 마지막 장에서 묵상 완료를 누르면 묵상 인증이 기록돼요.</p>
   </section>
 </main>
 <dialog id="reader" aria-labelledby="reader-title">
@@ -163,6 +166,24 @@
   </div>
   <button type="button" class="plain" id="meditation-complete" hidden>묵상 완료</button>
   <p id="meditation-status" role="status" hidden></p>
+</dialog>
+<dialog id="push-guide" aria-labelledby="push-guide-title">
+  <header><h2 id="push-guide-title">알림을 무음으로 받는 방법</h2><form method="dialog"><button type="submit" class="plain">닫기</button></form></header>
+  <p><strong>아이폰</strong> · 홈 화면의 대림절 앱에서 알림을 허용한 뒤, <strong>설정 → 알림 → 대림절</strong>에서 <strong>사운드</strong>를 끄세요. 알림 센터 등 원하는 표시 방식은 켜 두세요.</p>
+  <p><strong>안드로이드</strong> · 묵상 알림이 오면 길게 눌러 <strong>무음</strong>을 선택하세요. 기기에 따라 알림 설정에서 변경할 수도 있어요.</p>
+  <button type="button" class="plain" id="push-toggle" hidden>묵상 알림 받기</button>
+  <p class="hint" id="push-status" role="status" hidden></p>
+</dialog>
+<dialog id="entry-dialog" aria-labelledby="entry-title">
+  <form id="entry-form">
+    <h2 id="entry-title">대림절 묵상 달력 입장</h2>
+    <p class="hint">입력한 선교부·교구·이름은 출석과 묵상 인증을 확인하는 데 쓰이며 운영자용 시트에 기록돼요. 다음 입장을 위해 이 브라우저에도 저장돼요.</p>
+    <label>선교부 <input name="mission" required maxlength="60" autocomplete="off"></label>
+    <label>교구 <input name="district" required maxlength="60" autocomplete="off"></label>
+    <label>이름 <input name="name" required maxlength="60" autocomplete="name"></label>
+    <p id="entry-error" role="status" hidden></p>
+    <button type="submit" class="plain">입장하기</button>
+  </form>
 </dialog>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script src="./push.js" defer></script>

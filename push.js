@@ -1,4 +1,8 @@
-﻿const pushToggle = document.getElementById('push-toggle');
+document.getElementById('push-guide-open').addEventListener('click', () => {
+  document.getElementById('push-guide').showModal();
+});
+
+const pushToggle = document.getElementById('push-toggle');
 const pushStatus = document.getElementById('push-status');
 const iosDevice = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
