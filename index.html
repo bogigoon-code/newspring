@@ -176,10 +176,9 @@
 </dialog>
 <dialog id="entry-dialog" aria-labelledby="entry-title">
   <form id="entry-form">
-    <h2 id="entry-title">대림절 묵상 달력 입장</h2>
-    <p class="hint">입력한 선교부·교구·이름은 출석과 묵상 인증을 확인하는 데 쓰이며 운영자용 시트에 기록돼요. 다음 입장을 위해 이 브라우저에도 저장돼요.</p>
-    <label>선교부 <input name="mission" required maxlength="60" autocomplete="off"></label>
-    <label>교구 <input name="district" required maxlength="60" autocomplete="off"></label>
+    <h2 id="entry-title">대림절 묵상 캘린터 입장</h2>
+    <p class="hint">첫 입장에만 입력해요.</p>
+    <label>소속 <input name="affiliation" required maxlength="60" autocomplete="organization"></label>
     <label>이름 <input name="name" required maxlength="60" autocomplete="name"></label>
     <p id="entry-error" role="status" hidden></p>
     <button type="submit" class="plain">입장하기</button>
@@ -188,5 +187,5 @@
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script src="./push.js?v=8" defer></script>
 <script src="./calendar.js?v=8" defer></script>
-<script src="./attendance.js?v=8" defer></script>
+<script src="./attendance.js?v=9" defer></script>
 </html>

@@ -15,10 +15,14 @@ entryDialog.addEventListener('cancel', event => event.preventDefault());
 document.getElementById('entry-form').addEventListener('submit', event => {
   event.preventDefault();
   const input = new FormData(event.currentTarget);
-  const profile = Object.fromEntries(profileFields.map(field => [field, String(input.get(field)).trim()]));
+  const profile = {
+    mission: String(input.get('affiliation') || '').trim(),
+    district: '—',
+    name: String(input.get('name') || '').trim()
+  };
   const status = document.getElementById('entry-error');
   if (profileFields.some(field => !profile[field])) {
-    status.textContent = '선교부, 교구, 이름을 모두 입력해 주세요.';
+    status.textContent = '소속과 이름을 모두 입력해 주세요.';
     status.hidden = false;
     return;
   }
