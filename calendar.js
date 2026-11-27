@@ -26,6 +26,8 @@ try {
   }
 } catch {}
 let readyToComplete = null;
+const visitsConfirmed = new Set();
+const pendingCompletions = new Set();
 let seen = new Set();
 try {
   seen = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
@@ -153,8 +155,13 @@ async function showPage(direction = 0) {
       readyToComplete = day.number;
       const button = byId('meditation-complete');
       button.hidden = false;
-      button.disabled = completed.has(day.number);
-      button.textContent = button.disabled ? '묵상 완료됨' : '묵상 완료';
+      button.disabled = completed.has(day.number) || pendingCompletions.has(day.number);
+      button.textContent = completed.has(day.number) ? '묵상 완료됨' : pendingCompletions.has(day.number) ? '기록 중…' : '묵상 완료';
+    }
+    if (!visitsConfirmed.has(day.number)) {
+      recordAdventEvent('visit', day.number)
+        .then(() => visitsConfirmed.add(day.number))
+        .catch(() => {});
     }
     seen.add(day.number);
     try { localStorage.setItem(storageKey, JSON.stringify([...seen])); } catch {}
@@ -223,23 +230,32 @@ for (const [index, day] of days.entries()) {
   door.addEventListener('click', () => openDoor(day));
   calendar.append(door);
 }
-byId('meditation-complete').addEventListener('click', event => {
-  if (readyToComplete === null || completed.has(readyToComplete)) return;
+byId('meditation-complete').addEventListener('click', async event => {
+  const day = readyToComplete;
+  if (day === null || completed.has(day) || pendingCompletions.has(day)) return;
+  const button = event.currentTarget;
   const status = byId('meditation-status');
-  const updated = [...completed, readyToComplete];
+  pendingCompletions.add(day);
+  button.disabled = true;
+  button.textContent = '기록 중…';
+  let saved = false;
   try {
-    localStorage.setItem(completionKey, JSON.stringify(updated));
+    await recordAdventEvent('complete', day);
+    completed.add(day);
+    saved = true;
+    try { localStorage.setItem(completionKey, JSON.stringify([...completed])); } catch {}
+    refreshLetter();
   } catch {
-    status.textContent = '이 브라우저에 묵상 완료를 저장하지 못했어요.';
-    status.hidden = false;
-    return;
+    // Leave the button available for retry.
+  } finally {
+    pendingCompletions.delete(day);
+    if (readyToComplete === day) {
+      button.disabled = saved;
+      button.textContent = saved ? '묵상 완료됨' : '묵상 완료';
+      status.textContent = saved ? `${day}일차 묵상을 인증했어요.` : '기록하지 못했어요. 묵상 완료를 다시 눌러 주세요.';
+      status.hidden = false;
+    }
   }
-  completed.add(readyToComplete);
-  event.currentTarget.disabled = true;
-  event.currentTarget.textContent = '묵상 완료됨';
-  status.textContent = `${readyToComplete}일차 묵상을 완료했어요.`;
-  status.hidden = false;
-  refreshLetter();
 });
 byId('retry').addEventListener('click', () => showPage());
 reader.addEventListener('close', () => {
