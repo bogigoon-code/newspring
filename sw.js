@@ -1,5 +1,5 @@
 const cachePrefix = 'advent-shell-';
-const version = cachePrefix + 'v1';
+const version = cachePrefix + 'v2';
 const assets = ['./index.html', './calendar.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {

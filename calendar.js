@@ -54,6 +54,33 @@ const apiConfig = fetch('./config.json', { cache: 'no-store' })
   .then(config => config.appsScriptUrl)
   .catch(() => '');
 
+function showBookPage(source, direction) {
+  const canTurn = direction && !card.hidden && card.naturalWidth &&
+    typeof card.animate === 'function' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (canTurn) {
+    const leaf = card.cloneNode();
+    leaf.removeAttribute('id');
+    leaf.alt = '';
+    leaf.setAttribute('aria-hidden', 'true');
+    leaf.classList.add('book-leaf');
+    card.after(leaf);
+
+    const transformOrigin = direction > 0 ? 'left center' : 'right center';
+    pageAnimation = leaf.animate([
+      { transform: 'rotateY(0deg)', transformOrigin, filter: 'brightness(1)', opacity: 1 },
+      { transform: `rotateY(${direction * -58}deg)`, transformOrigin, filter: 'brightness(.75)', opacity: 1, offset: .7 },
+      { transform: `rotateY(${direction * -95}deg)`, transformOrigin, filter: 'brightness(.6)', opacity: 0 }
+    ], { duration: 540, easing: 'cubic-bezier(.4,0,.2,1)' });
+    const removeLeaf = () => leaf.remove();
+    pageAnimation.onfinish = removeLeaf;
+    pageAnimation.oncancel = removeLeaf;
+  }
+
+  card.src = source;
+  card.hidden = false;
+}
+
 async function showPage(direction = 0) {
   pageAnimation?.cancel();
   pendingCard?.abort();
@@ -66,8 +93,7 @@ async function showPage(direction = 0) {
   const reflectionNumber = cardPage - firstReflection + 1;
   const scripture = cardPage < firstReflection;
 
-  card.hidden = true;
-  message.hidden = false;
+  message.hidden = !card.hidden;
   message.textContent = '묵상 카드를 불러오는 중이에요…';
   byId('retry').hidden = true;
   byId('scripture').setAttribute('aria-pressed', String(scripture));
@@ -88,25 +114,19 @@ async function showPage(direction = 0) {
     if (result.error === 'locked') throw new Error('locked');
     if (!result.ok || !result.image?.startsWith('data:image/png;base64,')) throw new Error('card');
     if (currentRequest !== requestId) return;
-    card.alt = scripture ? `${day.number}일차 오늘의 말씀` : `${day.number}일차 묵상 카드 ${reflectionNumber}번째 장`;
-    card.src = result.image;
-    await card.decode();
+    const incoming = new Image();
+    incoming.src = result.image;
+    await incoming.decode();
     if (currentRequest !== requestId) return;
-    card.hidden = false;
+    showBookPage(result.image, direction);
+    card.alt = scripture ? `${day.number}일차 오늘의 말씀` : `${day.number}일차 묵상 카드 ${reflectionNumber}번째 장`;
     message.hidden = true;
-    if (direction && typeof card.animate === 'function' &&
-        !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const transformOrigin = direction > 0 ? 'left center' : 'right center';
-      pageAnimation = card.animate([
-        { transform: `perspective(1000px) rotateY(${direction * 58}deg)`, transformOrigin, opacity: 0.5 },
-        { transform: 'none', transformOrigin, opacity: 1 }
-      ], { duration: 380, easing: 'ease-out' });
-    }
     seen.add(day.number);
     try { localStorage.setItem(storageKey, JSON.stringify([...seen])); } catch {}
     refresh();
   } catch (error) {
     if (currentRequest !== requestId || controller.signal.aborted) return;
+    message.hidden = false;
     message.textContent = error.message === 'locked' ? `${day.label}에 이 문이 열려요.`
       : error.message === 'unconfigured' ? '카드 서버 연결을 준비 중이에요.'
       : '묵상 카드를 불러오지 못했어요.';

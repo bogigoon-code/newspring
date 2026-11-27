@@ -113,6 +113,11 @@
   @media(max-width:560px){.grid{gap:4px}.door small{font-size:.75rem}main{padding-top:12px}.cover blockquote{max-width:15rem}}
   body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
   #retry{margin-bottom:12px}
+  .book-stage{position:relative;perspective:950px}
+  .book-stage .book-leaf{
+    position:absolute;inset:0;pointer-events:none;backface-visibility:hidden;
+    box-shadow:10px 4px 22px #26192a70;
+  }
 </style>
 <main>
   <header class="cover">
@@ -137,7 +142,7 @@
     <button type="button" class="plain" id="scripture" aria-pressed="true">오늘의 말씀</button>
     <button type="button" class="plain" id="reflection" aria-pressed="false">묵상 카드</button>
   </div>
-  <img id="card" alt="" hidden>
+  <div class="book-stage"><img id="card" alt="" hidden></div>
   <div class="controls" id="controls" hidden>
     <button type="button" class="plain" id="previous">이전</button>
     <span id="page" aria-live="polite"></span>
