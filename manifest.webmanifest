@@ -1,0 +1,15 @@
+{
+  "id": "./",
+  "name": "대림절 묵상 달력",
+  "short_name": "대림절",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#311c46",
+  "theme_color": "#311c46",
+  "icons": [
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
