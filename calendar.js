@@ -17,6 +17,15 @@ const days = Array.from({ length: 26 }, (_, index) => {
   };
 });
 const storageKey = 'advent-2026-read';
+const completionKey = 'advent-2026-completed';
+const completed = new Set();
+try {
+  const storedDays = JSON.parse(localStorage.getItem(completionKey) || '[]');
+  for (const day of storedDays) {
+    if (Number.isInteger(day) && day >= 1 && day <= days.length) completed.add(day);
+  }
+} catch {}
+let readyToComplete = null;
 let seen = new Set();
 try {
   seen = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
@@ -32,7 +41,25 @@ const card = byId('card');
 const message = byId('message');
 const today = () => formatDateKey.format(new Date());
 
+function refreshLetter() {
+  const opensAt = Date.parse('2026-12-25T07:30:00+09:00');
+  const letter = byId('christmas-letter');
+  letter.hidden = Date.now() < opensAt;
+  if (letter.hidden) return;
+  const remaining = days.length - completed.size;
+  byId('letter-status').textContent = remaining
+    ? `묵상 ${remaining}일이 남았어요. 지난 카드도 읽고 완료할 수 있어요.`
+    : '묵상 26일을 모두 마쳤어요. 편지를 준비하고 있어요.';
+}
+
+function resetCompletionControl() {
+  readyToComplete = null;
+  byId('meditation-complete').hidden = true;
+  byId('meditation-status').hidden = true;
+}
+
 function refresh() {
+  refreshLetter();
   const date = today();
   days.forEach((day, index) => {
     const door = calendar.children[index];
@@ -82,6 +109,7 @@ function showBookPage(source, direction) {
 }
 
 async function showPage(direction = 0) {
+  resetCompletionControl();
   pageAnimation?.cancel();
   pendingCard?.abort();
   const controller = new AbortController();
@@ -121,6 +149,13 @@ async function showPage(direction = 0) {
     showBookPage(result.image, direction);
     card.alt = scripture ? `${day.number}일차 오늘의 말씀` : `${day.number}일차 묵상 카드 ${reflectionNumber}번째 장`;
     message.hidden = true;
+    if (cardPage === day.cardCount) {
+      readyToComplete = day.number;
+      const button = byId('meditation-complete');
+      button.hidden = false;
+      button.disabled = completed.has(day.number);
+      button.textContent = button.disabled ? '묵상 완료됨' : '묵상 완료';
+    }
     seen.add(day.number);
     try { localStorage.setItem(storageKey, JSON.stringify([...seen])); } catch {}
     refresh();
@@ -134,6 +169,7 @@ async function showPage(direction = 0) {
   }
 }
 function openDoor(day) {
+  resetCompletionControl();
   requestId += 1;
   pendingCard?.abort();
   byId('retry').hidden = true;
@@ -187,6 +223,24 @@ for (const [index, day] of days.entries()) {
   door.addEventListener('click', () => openDoor(day));
   calendar.append(door);
 }
+byId('meditation-complete').addEventListener('click', event => {
+  if (readyToComplete === null || completed.has(readyToComplete)) return;
+  const status = byId('meditation-status');
+  const updated = [...completed, readyToComplete];
+  try {
+    localStorage.setItem(completionKey, JSON.stringify(updated));
+  } catch {
+    status.textContent = '이 브라우저에 묵상 완료를 저장하지 못했어요.';
+    status.hidden = false;
+    return;
+  }
+  completed.add(readyToComplete);
+  event.currentTarget.disabled = true;
+  event.currentTarget.textContent = '묵상 완료됨';
+  status.textContent = `${readyToComplete}일차 묵상을 완료했어요.`;
+  status.hidden = false;
+  refreshLetter();
+});
 byId('retry').addEventListener('click', () => showPage());
 reader.addEventListener('close', () => {
   requestId += 1;

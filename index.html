@@ -119,6 +119,11 @@
     box-shadow:10px 4px 22px #26192a70;
   }
   #push-toggle{margin-top:14px}
+  #christmas-letter{margin-top:20px;padding:16px;border:1px solid #b893bd;border-radius:14px}
+  #christmas-letter h2,#christmas-letter p{margin:0}
+  #christmas-letter p{margin-top:6px}
+  #meditation-complete{display:block;margin:12px auto 0}
+  #meditation-status{margin:8px 0 0;text-align:center}
 </style>
 <main>
   <header class="cover">
@@ -134,6 +139,10 @@
     </div>
     <div class="grid" id="calendar"></div>
     <p class="hint" id="hint" aria-live="polite"></p>
+    <section id="christmas-letter" hidden aria-labelledby="letter-title">
+      <h2 id="letter-title">예수님의 편지</h2>
+      <p id="letter-status"></p>
+    </section>
     <button type="button" class="plain" id="push-toggle" hidden>묵상 알림 받기</button>
     <p class="hint" id="push-status" role="status" hidden></p>
     <p class="hint" id="attendance-note" hidden>출석 기록을 켜면 대림절 기간에 이 브라우저로 방문한 날짜와 임의 식별자가 운영자용 시트에 기록돼요.</p>
@@ -154,6 +163,8 @@
     <span id="page" aria-live="polite"></span>
     <button type="button" class="plain" id="next">다음</button>
   </div>
+  <button type="button" class="plain" id="meditation-complete" hidden>묵상 완료</button>
+  <p id="meditation-status" role="status" hidden></p>
 </dialog>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script src="./push.js" defer></script>
