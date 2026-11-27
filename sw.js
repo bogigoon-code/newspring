@@ -1,6 +1,6 @@
 const cachePrefix = 'advent-shell-';
-const version = cachePrefix + 'v7';
-const assets = ['./index.html', './calendar.js', './push.js', './attendance.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const version = cachePrefix + 'v8';
+const assets = ['./index.html', './calendar.js?v=8', './push.js?v=8', './attendance.js?v=8', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(version).then(cache => cache.addAll(assets)));
