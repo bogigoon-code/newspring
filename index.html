@@ -136,6 +136,9 @@
     <p class="hint" id="hint" aria-live="polite"></p>
     <button type="button" class="plain" id="push-toggle" hidden>묵상 알림 받기</button>
     <p class="hint" id="push-status" role="status" hidden></p>
+    <p class="hint" id="attendance-note" hidden>출석 기록을 켜면 대림절 기간에 이 브라우저로 방문한 날짜와 임의 식별자가 운영자용 시트에 기록돼요.</p>
+    <button type="button" class="plain" id="attendance-toggle" hidden>출석 기록 켜기</button>
+    <p class="hint" id="attendance-result" role="status" hidden></p>
   </section>
 </main>
 <dialog id="reader" aria-labelledby="reader-title">
@@ -155,4 +158,5 @@
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script src="./push.js" defer></script>
 <script src="./calendar.js" defer></script>
+<script src="./attendance.js" defer></script>
 </html>
